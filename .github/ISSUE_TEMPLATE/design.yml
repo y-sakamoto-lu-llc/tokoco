@@ -1,0 +1,77 @@
+name: 技術設計・画面仕様
+description: 設計ドキュメントの新規作成・更新（docs/basic-design/ への成果物）
+labels: ["type: design"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 設計種別
+      options:
+        - 画面仕様（スクリーンレイアウト・フォーム・状態）
+        - APIデザイン（Route Handler・リクエスト/レスポンス）
+        - DB設計（スキーマ・RLS・マイグレーション）
+        - アーキテクチャ（システム構成・データフロー）
+        - デザインシステム（カラー・タイポグラフィ・コンポーネント）
+        - UXパターン（エラー・ローディング・空状態）
+        - セキュリティ設計（認証・認可・バリデーション）
+        - インフラ・デプロイ
+        - その他
+    validations:
+      required: true
+  - type: dropdown
+    id: screen
+    attributes:
+      label: 対象画面（画面仕様の場合）
+      options:
+        - S-01 Landing Page
+        - S-02 Sign Up
+        - S-03 Login
+        - S-04 Password Reset Request
+        - S-05 Password Reset Execute
+        - S-06 Home / My List
+        - S-07 Add Shop
+        - S-08 Shop Detail
+        - S-09 Event List
+        - S-10 Create Event
+        - S-11 Event Detail (Owner)
+        - S-12 Event Share Page
+        - S-13 Vote Complete
+        - S-14 Account Settings
+        - N/A（画面仕様以外）
+    validations:
+      required: false
+  - type: textarea
+    id: requirements
+    attributes:
+      label: カバーする要件ID
+      description: 例） AUTH-01, AUTH-02, SHOP-07 など
+    validations:
+      required: false
+  - type: textarea
+    id: deliverable
+    attributes:
+      label: 成果物（ファイルパス）
+      description: "例: docs/basic-design/05_api-route-handlers.md"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 設計スコープ（カバーすべき内容）
+      description: このドキュメントで決定すべきこと・記述すべき内容を箇条書きで
+    validations:
+      required: true
+  - type: textarea
+    id: open_questions
+    attributes:
+      label: 未決定の設計事項
+      description: 実装着手前に答えが必要な未解決の問い
+    validations:
+      required: false
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依存Issue
+      description: "例: Depends on #1（ブランドデザインシステム完了後に着手）"
+    validations:
+      required: false

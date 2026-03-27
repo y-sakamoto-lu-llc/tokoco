@@ -1,0 +1,53 @@
+name: 要件定義・変更
+description: 要件の新規追加・変更・削除（docs/requirements.md の更新）
+labels: ["type: requirements"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: 対象機能エリア
+      options:
+        - auth（認証・アカウント管理）
+        - shop（店舗記録・管理）
+        - event（イベント・共有）
+        - vote（投票）
+        - infra（インフラ・非機能）
+        - cross（複数エリアにまたがる）
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 変更の背景・動機
+      description: なぜこの要件変更が必要か
+    validations:
+      required: true
+  - type: textarea
+    id: content
+    attributes:
+      label: 追加・変更・削除する要件の内容
+      description: 具体的に何を変えるか。新しい要件IDを提案する場合はここに記載
+    validations:
+      required: true
+  - type: textarea
+    id: affected
+    attributes:
+      label: 影響を受ける既存要件ID
+      description: 例） AUTH-01, SHOP-07 など
+    validations:
+      required: false
+  - type: textarea
+    id: deliverable
+    attributes:
+      label: 成果物
+      description: "docs/requirements.md の更新内容（差分の概要）"
+      value: "- `docs/requirements.md` を更新"
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依存Issue
+      description: このIssueが完了してから着手すべき設計・実装Issueがあれば記載（例: Blocks #XX）
+    validations:
+      required: false

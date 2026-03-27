@@ -1,0 +1,70 @@
+name: 実装
+description: コードの実装（機能・画面・インフラ）
+labels: ["type: impl"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: 機能エリア
+      options:
+        - auth（認証・アカウント管理）
+        - shop（店舗記録・管理）
+        - event（イベント・共有）
+        - vote（投票）
+        - infra（インフラ・共通）
+        - design-system（共通コンポーネント・テーマ）
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: カバーする要件ID
+      description: 例） SHOP-01, SHOP-02, SHOP-03
+    validations:
+      required: false
+  - type: textarea
+    id: design_ref
+    attributes:
+      label: 設計参照
+      description: "対応する設計IssueまたはドキュメントのリンクまたはIssue番号（例: #16）"
+    validations:
+      required: false
+  - type: textarea
+    id: scope
+    attributes:
+      label: 実装スコープ
+      description: |
+        変更・追加するファイル/層を記載
+        - Route(s):
+        - Server Components:
+        - Client Components:
+        - Route Handlers (API):
+        - DB queries (Drizzle):
+        - Zod schemas:
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 受け入れ条件
+      description: 完了の判断基準をテスト可能な箇条書きで
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依存Issue
+      description: "例: Depends on #21（画面仕様）, #6（バリデーション戦略）"
+    validations:
+      required: false
+  - type: checkboxes
+    id: pr_checklist
+    attributes:
+      label: PRチェックリスト
+      options:
+        - label: Biome lint/format パス
+        - label: TypeScript 型エラーなし
+        - label: Vitest テスト追加・更新済み
+        - label: Supabase RLS が新規クエリに適用されていることを確認
+        - label: モバイル（375px・390px）でレイアウト確認
+        - label: APIキー・秘密情報がクライアントバンドルに含まれていないことを確認
