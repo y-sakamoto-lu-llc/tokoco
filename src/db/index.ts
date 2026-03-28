@@ -4,3 +4,4 @@
  * application code imports from a single entry point.
  */
 export * from "./schema";
+export * from "./client";
