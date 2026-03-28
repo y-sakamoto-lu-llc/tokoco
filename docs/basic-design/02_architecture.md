@@ -36,6 +36,6 @@
 | shops | 本人のみ SELECT / INSERT / UPDATE / DELETE |
 | tags | 本人のみ SELECT / INSERT / DELETE |
 | shop_tags | 本人のみ SELECT / INSERT / DELETE |
-| events | 本人のみ INSERT / UPDATE / DELETE；share_token が一致する場合は全員 SELECT |
+| events | 本人のみ INSERT / UPDATE / DELETE / SELECT；ゲストからの SELECT は Route Handler が service_role でバイパス（anon ロールからの直接アクセスは RLS で遮断） |
 | event_shops | events に準ずる |
-| votes / vote_choices | share_token 一致で INSERT；オーナーのみ SELECT |
+| votes / vote_choices | オーナーのみ SELECT；ゲストからの INSERT は Route Handler が service_role でバイパス（anon ロールからの直接 INSERT は RLS で遮断） |
