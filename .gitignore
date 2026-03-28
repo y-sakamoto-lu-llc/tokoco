@@ -40,3 +40,5 @@ coverage/
 # IDE
 .vscode/
 .idea/
+
+# Supabase (additional ignores managed in supabase/.gitignore)
