@@ -60,10 +60,9 @@ gh pr review <PR番号> --repo y-sakamoto-lu-llc/tokoco --comment \
   --body "レビューコメント"
 ```
 
-レビュー投稿後、GitHub Projects のステータスを更新する:
+レビュー投稿後、GitHub Projects のステータスを更新する。Issue番号は PR の "Closes #XX" から特定する。
 
 ```bash
-# Issue番号をPRの "Closes #XX" から特定する
 # Issue番号 → Project Item ID を取得
 ITEM_ID=$(gh api graphql -f query='
 query($number:Int!) {
@@ -77,8 +76,10 @@ query($number:Int!) {
 }' -F number=<issue番号> \
 --jq '.data.repository.issue.projectItems.nodes[] | select(.project.id == "PVT_kwHOC_LCoc4BS9W3") | .id')
 
-# 承認の場合 → Done（16180cf6）
-# 修正依頼の場合 → In Progress（12518db2）
+# ITEM_ID が空の場合（IssueがProjectに未登録）はスキップ
+[ -z "$ITEM_ID" ] && echo "Issue is not in the project, skipping status update" && return 0 || true
+
+# 承認の場合 → In Review → Done
 gh api graphql -f query='
 mutation($itemId:ID!, $optionId:String!) {
   updateProjectV2ItemFieldValue(input:{
@@ -87,7 +88,18 @@ mutation($itemId:ID!, $optionId:String!) {
     fieldId:"PVTSSF_lAHOC_LCoc4BS9W3zhAV02U",
     value:{singleSelectOptionId:$optionId}
   }) { projectV2Item { id } }
-}' -F itemId="$ITEM_ID" -F optionId="<16180cf6(承認) または 12518db2(修正依頼)>"
+}' -F itemId="$ITEM_ID" -F optionId="16180cf6"
+
+# 修正依頼の場合 → In Review → In Progress
+gh api graphql -f query='
+mutation($itemId:ID!, $optionId:String!) {
+  updateProjectV2ItemFieldValue(input:{
+    projectId:"PVT_kwHOC_LCoc4BS9W3",
+    itemId:$itemId,
+    fieldId:"PVTSSF_lAHOC_LCoc4BS9W3zhAV02U",
+    value:{singleSelectOptionId:$optionId}
+  }) { projectV2Item { id } }
+}' -F itemId="$ITEM_ID" -F optionId="12518db2"
 ```
 
 ---
