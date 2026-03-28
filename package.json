@@ -10,7 +10,8 @@
 		"format": "biome format --write .",
 		"check": "biome check --write .",
 		"tsc": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"supabase": "supabase"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.4",
@@ -24,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
+		"supabase": "2.84.4",
 		"@tailwindcss/postcss": "^4",
 		"@types/jsdom": "^28.0.1",
 		"@types/node": "^20",
