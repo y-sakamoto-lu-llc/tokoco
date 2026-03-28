@@ -421,9 +421,10 @@ type UpdatePasswordRequest = {
 **処理:**
 
 1. JWT から `user.id` を取得
-2. DB Trigger（`on_profile_deleted`）が votes.voter_name を「退会済みユーザー」に匿名化（AUTH-15）
-3. `profiles` を削除（FK cascade で shops・tags・events を削除）
-4. service_role で `auth.users` からユーザーを削除（`supabase.auth.admin.deleteUser(userId)`）
+2. service_role で `auth.users` からユーザーを削除（`supabase.auth.admin.deleteUser(userId)`）
+3. FK cascade により `profiles` が自動削除（shops・tags・events も連鎖削除）
+   - `profiles` の BEFORE DELETE Trigger（`on_profile_deleted`）が `votes.voter_name` を「退会済みユーザー」に匿名化（AUTH-15）
+   - その後 FK の `on delete set null` により `votes.user_id` が NULL に更新
 
 **レスポンス:** 204 No Content
 
