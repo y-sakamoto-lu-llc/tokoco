@@ -9,6 +9,7 @@
 
 ## 重要ドキュメント
 
+- 開発フロー: `docs/development-flow.md`（エージェント構成・Issueワークフロー・PR規約）
 - 要件定義: `docs/requirements.md`（機能要件・要件ID: AUTH-xx / SHOP-xx / EVENT-xx / VOTE-xx）
 - 技術スタック選定: `docs/basic-design/01_tech-stack.md`
 - システムアーキテクチャ: `docs/basic-design/02_architecture.md`
