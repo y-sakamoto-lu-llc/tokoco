@@ -6,7 +6,7 @@ export default function AuthLayout({
 	return (
 		<div className="flex min-h-full flex-col items-center justify-center px-4 py-12">
 			<div className="mb-8 text-center">
-				<h1 className="text-3xl font-bold text-primary">Tokoco</h1>
+				<p className="text-3xl font-bold text-primary">Tokoco</p>
 				<p className="mt-1 text-sm text-muted-foreground">
 					レストランを記録・管理し、グループでの食事イベント調整を行うWebアプリ
 				</p>

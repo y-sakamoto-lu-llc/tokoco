@@ -29,41 +29,41 @@
 @layer base {
 	:root {
 		/* Background / Foreground */
-		--background: hsl(0 0% 98%); /* neutral-50: #fafafa */
-		--foreground: hsl(240 4% 16%); /* neutral-900: #18181b */
+		--background: 0 0% 98%; /* neutral-50: #fafafa */
+		--foreground: 240 4% 16%; /* neutral-900: #18181b */
 
 		/* Card */
-		--card: hsl(0 0% 100%); /* #ffffff */
-		--card-foreground: hsl(240 4% 16%); /* neutral-900 */
+		--card: 0 0% 100%; /* #ffffff */
+		--card-foreground: 240 4% 16%; /* neutral-900 */
 
 		/* Popover */
-		--popover: hsl(0 0% 100%);
-		--popover-foreground: hsl(240 4% 16%);
+		--popover: 0 0% 100%;
+		--popover-foreground: 240 4% 16%;
 
 		/* Primary（ブランドカラー #639922） */
-		--primary: hsl(85 63% 37%); /* HSL of #639922 */
-		--primary-foreground: hsl(0 0% 100%); /* #ffffff */
+		--primary: 85 63% 37%; /* HSL of #639922 */
+		--primary-foreground: 0 0% 100%; /* #ffffff */
 
 		/* Secondary（暫定: amber-500 #F59E0B） */
-		--secondary: hsl(38 92% 50%);
-		--secondary-foreground: hsl(24 10% 10%); /* stone-900 #1C1917 */
+		--secondary: 38 92% 50%;
+		--secondary-foreground: 24 10% 10%; /* stone-900 #1C1917 */
 
 		/* Muted */
-		--muted: hsl(240 5% 96%); /* neutral-100: #f4f4f5 */
-		--muted-foreground: hsl(240 4% 46%); /* neutral-500: #71717a */
+		--muted: 240 5% 96%; /* neutral-100: #f4f4f5 */
+		--muted-foreground: 240 4% 46%; /* neutral-500: #71717a */
 
 		/* Accent */
-		--accent: hsl(86 55% 93%); /* primary-50: #f3f8e9 */
-		--accent-foreground: hsl(85 63% 37%); /* primary-500: #639922 */
+		--accent: 86 55% 93%; /* primary-50: #f3f8e9 */
+		--accent-foreground: 85 63% 37%; /* primary-500: #639922 */
 
 		/* Destructive */
-		--destructive: hsl(0 84% 60%); /* red-500: #ef4444 */
-		--destructive-foreground: hsl(0 0% 100%);
+		--destructive: 0 84% 60%; /* red-500: #ef4444 */
+		--destructive-foreground: 0 0% 100%;
 
 		/* Border / Input / Ring */
-		--border: hsl(240 6% 90%); /* neutral-200: #e4e4e7 */
-		--input: hsl(240 6% 90%); /* neutral-200 */
-		--ring: hsl(85 63% 37%); /* primary-500: #639922 */
+		--border: 240 6% 90%; /* neutral-200: #e4e4e7 */
+		--input: 240 6% 90%; /* neutral-200 */
+		--ring: 85 63% 37%; /* primary-500: #639922 */
 
 		/* Border Radius */
 		--radius: 0.5rem; /* 8px = rounded-md */
@@ -71,25 +71,25 @@
 
 	/* ダークモード変数（v1.0 では未使用。宣言のみ保持） */
 	.dark {
-		--background: hsl(240 10% 4%);
-		--foreground: hsl(0 0% 98%);
-		--card: hsl(240 10% 6%);
-		--card-foreground: hsl(0 0% 98%);
-		--popover: hsl(240 10% 6%);
-		--popover-foreground: hsl(0 0% 98%);
-		--primary: hsl(85 63% 55%);
-		--primary-foreground: hsl(240 10% 4%);
-		--secondary: hsl(38 92% 50%);
-		--secondary-foreground: hsl(24 10% 10%);
-		--muted: hsl(240 5% 15%);
-		--muted-foreground: hsl(240 5% 65%);
-		--accent: hsl(240 5% 15%);
-		--accent-foreground: hsl(0 0% 98%);
-		--destructive: hsl(0 63% 31%);
-		--destructive-foreground: hsl(0 0% 98%);
-		--border: hsl(240 5% 20%);
-		--input: hsl(240 5% 20%);
-		--ring: hsl(85 63% 55%);
+		--background: 240 10% 4%;
+		--foreground: 0 0% 98%;
+		--card: 240 10% 6%;
+		--card-foreground: 0 0% 98%;
+		--popover: 240 10% 6%;
+		--popover-foreground: 0 0% 98%;
+		--primary: 85 63% 55%;
+		--primary-foreground: 240 10% 4%;
+		--secondary: 38 92% 50%;
+		--secondary-foreground: 24 10% 10%;
+		--muted: 240 5% 15%;
+		--muted-foreground: 240 5% 65%;
+		--accent: 240 5% 15%;
+		--accent-foreground: 0 0% 98%;
+		--destructive: 0 63% 31%;
+		--destructive-foreground: 0 0% 98%;
+		--border: 240 5% 20%;
+		--input: 240 5% 20%;
+		--ring: 85 63% 55%;
 	}
 }
 

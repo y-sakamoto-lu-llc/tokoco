@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 // isPublicRoute / isAuthRoute のロジックをテスト（関数をエクスポートせずにロジックだけ検証）
-const PUBLIC_ROUTES = ["/", "/login", "/signup", "/reset-password"];
+const PUBLIC_ROUTES = ["/", "/login", "/signup", "/reset-password", "/verify-email"];
 const PUBLIC_ROUTE_PREFIXES = ["/events/share/", "/auth/callback", "/auth/password-reset-callback"];
 const AUTH_ROUTES = ["/login", "/signup", "/reset-password"];
 
@@ -44,6 +44,10 @@ describe("middleware route classification", () => {
 
 		it("/auth/password-reset-callback はパブリックルート", () => {
 			expect(isPublicRoute("/auth/password-reset-callback")).toBe(true);
+		});
+
+		it("/verify-email はパブリックルート（リダイレクトループ防止）", () => {
+			expect(isPublicRoute("/verify-email")).toBe(true);
 		});
 
 		it("/home はパブリックルートではない（認証必須）", () => {

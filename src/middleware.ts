@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 // 認証不要のルートパターン
-const PUBLIC_ROUTES = ["/", "/login", "/signup", "/reset-password"];
+const PUBLIC_ROUTES = ["/", "/login", "/signup", "/reset-password", "/verify-email"];
 const PUBLIC_ROUTE_PREFIXES = ["/events/share/", "/auth/callback", "/auth/password-reset-callback"];
 
 // 認証済みユーザーをリダイレクトする認証系ルート
