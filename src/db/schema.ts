@@ -7,10 +7,11 @@ import { check, index, numeric, pgTable, text, timestamp, unique, uuid } from "d
 
 export const PRICE_RANGE_VALUES = [
 	"〜¥999",
-	"¥1000〜¥1999",
-	"¥2000〜¥2999",
-	"¥3000〜¥4999",
-	"¥5000〜",
+	"¥1,000〜¥2,999",
+	"¥3,000〜¥5,999",
+	"¥6,000〜¥9,999",
+	"¥10,000〜",
+	"価格帯不明",
 ] as const;
 
 export type PriceRange = (typeof PRICE_RANGE_VALUES)[number];
@@ -58,7 +59,7 @@ export const shops = pgTable(
 		index("idx_shops_user_area").on(t.userId, t.area),
 		check(
 			"shops_price_range_check",
-			sql`${t.priceRange} in ('〜¥999', '¥1000〜¥1999', '¥2000〜¥2999', '¥3000〜¥4999', '¥5000〜')`
+			sql`${t.priceRange} in ('〜¥999', '¥1,000〜¥2,999', '¥3,000〜¥5,999', '¥6,000〜¥9,999', '¥10,000〜', '価格帯不明')`
 		),
 	]
 );
