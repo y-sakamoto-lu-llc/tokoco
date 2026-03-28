@@ -176,7 +176,7 @@ Route Handler レスポンス: 200
 | 条件 | HTTP ステータス | エラーメッセージ |
 |---|---|---|
 | バリデーションエラー | 400 | 「メールアドレスまたはパスワードの形式が正しくありません」 |
-| メール未確認 | 403 | 「メールアドレスの確認が完了していません。確認メールをご確認ください」 |
+| メール未確認 | 401 | 「メールアドレスの確認が完了していません。確認メールをご確認ください」 |
 | 認証失敗（メール or パスワード不一致） | 401 | 「メールアドレスまたはパスワードが正しくありません」 |
 | レートリミット超過 | 429 | 「ログイン試行回数の上限に達しました。しばらく後にお試しください」 |
 
@@ -249,7 +249,7 @@ Route Handler レスポンス: 204
   ▼
 POST /api/auth/password-reset-request
   │ supabase.auth.resetPasswordForEmail(email, {
-  │   redirectTo: NEXT_PUBLIC_SITE_URL + '/auth/password-reset-callback'
+  │   redirectTo: NEXT_PUBLIC_SITE_URL + '/reset-password'
   │ })
   │ ※ 存在しないメールアドレスでも成功レスポンスを返す（列挙攻撃対策）
   ▼
@@ -339,7 +339,6 @@ type PasswordResetResponse = {
   ▼
 PATCH /api/auth/profile
   │ JWT 認証（createServerClient で getUser()）
-  │ supabase.auth.updateUser({ data: { display_name: newName } })
   │ profiles テーブルを Drizzle で更新
   │   UPDATE profiles SET display_name = $1, updated_at = now() WHERE id = $2
   ▼
@@ -508,10 +507,13 @@ Route Handler レスポンス: 204
 
 ### ルートの分類
 
+> **補足:** `(auth)` / `(app)` はNext.js のルートグループ記法（ディレクトリ名がURLに現れない）。
+> 例: `(app)/home` のファイルはブラウザ上では `/home` としてアクセスされる。
+
 | パスパターン | 認証要否 | メール確認要否 | 処理 |
 |---|---|---|---|
-| `/(auth)/*`（login・signup 等） | 不要 | 不要 | ログイン済みなら `/(app)/home` へリダイレクト |
-| `/(app)/*`（home・shops 等） | 必須 | 必須 | 未認証 → `/login`、メール未確認 → `/verify-email` |
+| `/(auth)/*`（login・signup 等） | 不要 | 不要 | ログイン済みなら `/home` へリダイレクト |
+| `/(app)/*`（home・shops 等）→ ブラウザ上は `/home`・`/shops` 等 | 必須 | 必須 | 未認証 → `/login`、メール未確認 → `/verify-email` |
 | `/events/share/[token]` | 不要 | 不要 | ゲストアクセス可能 |
 | `/auth/callback` | 不要 | 不要 | メール確認コールバック |
 | `/auth/password-reset-callback` | 不要 | 不要 | パスワードリセットコールバック |
@@ -692,7 +694,7 @@ Supabase Auth の組み込みレートリミットを活用する。
 | ログイン（`/auth/v1/token`） | 60 リクエスト/時/IP |
 | パスワードリセット（`/auth/v1/recover`） | 60 リクエスト/時/IP |
 
-- Supabase Dashboard の `Authentication > Rate Limits` で調整可能。
+- 上記はデフォルト値であり、実際の制限値は Supabase Dashboard の `Authentication > Rate Limits` で確認・変更すること。
 - Route Handler 自体に追加のレートリミット実装は v1.0 では行わない。
 
 ### RLS との連携（SEC-06）
@@ -720,8 +722,8 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
 
-export function createSupabaseServerClient() {
-  const cookieStore = cookies()
+export async function createSupabaseServerClient() {
+  const cookieStore = await cookies()
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
