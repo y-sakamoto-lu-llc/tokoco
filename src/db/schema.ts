@@ -2,7 +2,18 @@
  * Drizzle ORM schema definitions
  * Synchronized with docs/basic-design/04_database.md
  */
-import { index, numeric, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { check, index, numeric, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+
+export const PRICE_RANGE_VALUES = [
+	"〜¥999",
+	"¥1000〜¥1999",
+	"¥2000〜¥2999",
+	"¥3000〜¥4999",
+	"¥5000〜",
+] as const;
+
+export type PriceRange = (typeof PRICE_RANGE_VALUES)[number];
 
 // ---------------------------------------------------------------
 // profiles
@@ -29,7 +40,7 @@ export const shops = pgTable(
 		address: text("address"),
 		phone: text("phone"),
 		category: text("category"),
-		priceRange: text("price_range"),
+		priceRange: text("price_range").$type<PriceRange>(),
 		externalRating: numeric("external_rating", { precision: 3, scale: 1 }),
 		businessHours: text("business_hours"),
 		websiteUrl: text("website_url"),
@@ -45,6 +56,10 @@ export const shops = pgTable(
 		index("idx_shops_user_category").on(t.userId, t.category),
 		index("idx_shops_user_price").on(t.userId, t.priceRange),
 		index("idx_shops_user_area").on(t.userId, t.area),
+		check(
+			"shops_price_range_check",
+			sql`${t.priceRange} in ('〜¥999', '¥1000〜¥1999', '¥2000〜¥2999', '¥3000〜¥4999', '¥5000〜')`
+		),
 	]
 );
 
