@@ -51,6 +51,32 @@ git checkout -b <type>/<issue番号>-<short-kebab-description>
 # 例: git checkout -b impl/23-add-shop-places-autocomplete
 ```
 
+ブランチ作成後、GitHub Projects のステータスを **Ready → In Progress** に更新する:
+
+```bash
+ITEM_ID=$(gh api graphql -f query='
+query($number:Int!) {
+  repository(owner:"y-sakamoto-lu-llc", name:"tokoco") {
+    issue(number:$number) {
+      projectItems(first:10) {
+        nodes { id project { id } }
+      }
+    }
+  }
+}' -F number=<issue番号> \
+--jq '.data.repository.issue.projectItems.nodes[] | select(.project.id == "PVT_kwHOC_LCoc4BS9W3") | .id')
+
+gh api graphql -f query='
+mutation($itemId:ID!, $optionId:String!) {
+  updateProjectV2ItemFieldValue(input:{
+    projectId:"PVT_kwHOC_LCoc4BS9W3",
+    itemId:$itemId,
+    fieldId:"PVTSSF_lAHOC_LCoc4BS9W3zhAV02U",
+    value:{singleSelectOptionId:$optionId}
+  }) { projectV2Item { id } }
+}' -F itemId="$ITEM_ID" -F optionId="12518db2"
+```
+
 ### 3. 実装する（後述の規約に従う）
 
 ### 4. テストを書く・既存テストを更新する
@@ -87,6 +113,32 @@ gh pr create \
 Closes #<issue番号>
 EOF
 )"
+```
+
+PR作成後、GitHub Projects のステータスを **In Progress → In Review** に更新する:
+
+```bash
+ITEM_ID=$(gh api graphql -f query='
+query($number:Int!) {
+  repository(owner:"y-sakamoto-lu-llc", name:"tokoco") {
+    issue(number:$number) {
+      projectItems(first:10) {
+        nodes { id project { id } }
+      }
+    }
+  }
+}' -F number=<issue番号> \
+--jq '.data.repository.issue.projectItems.nodes[] | select(.project.id == "PVT_kwHOC_LCoc4BS9W3") | .id')
+
+gh api graphql -f query='
+mutation($itemId:ID!, $optionId:String!) {
+  updateProjectV2ItemFieldValue(input:{
+    projectId:"PVT_kwHOC_LCoc4BS9W3",
+    itemId:$itemId,
+    fieldId:"PVTSSF_lAHOC_LCoc4BS9W3zhAV02U",
+    value:{singleSelectOptionId:$optionId}
+  }) { projectV2Item { id } }
+}' -F itemId="$ITEM_ID" -F optionId="dec4b118"
 ```
 
 ---
