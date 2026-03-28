@@ -107,3 +107,32 @@ Issue #XX の[設計/実装]を進める。
 ├── api-conventions.md     # Route Handler 規約
 └── ui-components.md       # コンポーネント設計規約
 ```
+
+## エージェントの改善方法
+
+エージェントの振る舞いは `.claude/agents/<name>.md` の内容で決まる。
+問題に気づいたら以下のフローで改善する:
+
+```
+1. GitHub Issue を作成
+   ラベル: type: chore + area: agents
+   タイトル例: "[pm] 次のアクション出力に依存Issueリンクが含まれない"
+
+2. .claude/agents/<name>.md を編集
+   - 問題の原因となっている指示を修正・追記
+
+3. コミット・プッシュ
+   git add .claude/agents/<name>.md
+   git commit -m "chore(agents): <修正内容> (#<issue番号>)"
+   git push
+
+4. 次のセッションから反映される
+```
+
+### エージェント一覧
+
+| ファイル | 役割 |
+|---|---|
+| `.claude/agents/pm.md` | 進捗確認・次のアクション提案・Issue作成 |
+| `.claude/agents/dev.md` | 設計書作成・実装・テスト・Git操作 |
+| `.claude/agents/reviewer.md` | コード・設計書・テストのレビュー |
