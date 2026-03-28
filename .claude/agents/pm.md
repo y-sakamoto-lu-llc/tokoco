@@ -61,6 +61,34 @@ gh issue list --repo y-sakamoto-lu-llc/tokoco --milestone "M0: Foundation" --sta
 2. 前段の設計Issueが完了している（implの場合）
 3. `priority: critical` または `priority: high` が先
 
+着手可能と判断したIssueは GitHub Projects のステータスを **Backlog → Ready** に更新する:
+
+```bash
+# Issue番号 → Project Item ID を取得
+ITEM_ID=$(gh api graphql -f query='
+query($number:Int!) {
+  repository(owner:"y-sakamoto-lu-llc", name:"tokoco") {
+    issue(number:$number) {
+      projectItems(first:10) {
+        nodes { id project { id } }
+      }
+    }
+  }
+}' -F number=<issue番号> \
+--jq '.data.repository.issue.projectItems.nodes[] | select(.project.id == "PVT_kwHOC_LCoc4BS9W3") | .id')
+
+# ステータスを Ready に更新
+gh api graphql -f query='
+mutation($itemId:ID!, $optionId:String!) {
+  updateProjectV2ItemFieldValue(input:{
+    projectId:"PVT_kwHOC_LCoc4BS9W3",
+    itemId:$itemId,
+    fieldId:"PVTSSF_lAHOC_LCoc4BS9W3zhAV02U",
+    value:{singleSelectOptionId:$optionId}
+  }) { projectV2Item { id } }
+}' -F itemId="$ITEM_ID" -F optionId="f891dab4"
+```
+
 ## 新Issue作成の手順
 
 ```bash
