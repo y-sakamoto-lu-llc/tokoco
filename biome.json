@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"ignore": ["node_modules", ".next", "public", "*.config.mjs", "next-env.d.ts"]
+		"ignore": ["node_modules", ".next", "public", "*.config.mjs", "next-env.d.ts", ".claude"]
 	},
 	"formatter": {
 		"enabled": true,
