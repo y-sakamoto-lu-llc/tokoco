@@ -103,6 +103,6 @@ Cloudflare Pages の `Settings > Environment variables` に以下を設定する
 | `NEXT_PUBLIC_SUPABASE_URL` | `src/lib/supabase/client.ts`, `src/lib/supabase/server.ts`, `src/lib/supabase/admin.ts` | Supabase クライアント初期化 |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `src/lib/supabase/client.ts`, `src/lib/supabase/server.ts` | Supabase 認証済みクライアント（RLS 適用） |
 | `SUPABASE_SERVICE_ROLE_KEY` | `src/lib/supabase/admin.ts` | Supabase admin クライアント（Route Handler のみ） |
-| `DATABASE_URL` | `drizzle.config.ts` | Drizzle Kit マイグレーション |
+| `DATABASE_URL` | `drizzle.config.ts`, `src/db/client.ts` | Drizzle Kit マイグレーション・DB クライアント初期化 |
 | `NEXT_PUBLIC_SITE_URL` | ゲスト共有リンク生成ロジック（実装予定） | `https://<site>/events/share/<token>` の生成 |
 | `GOOGLE_PLACES_API_KEY` | 店舗検索 Route Handler（実装予定） | Google Places Text Search API 呼び出し |
