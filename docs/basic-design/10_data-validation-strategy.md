@@ -229,6 +229,9 @@ export const createShopSchema = z.object({
   sourceUrl: optionalUrl,
   photoUrl: optionalUrl,
   note: z.string().max(1000, 'メモは1000文字以内で入力してください').trim().optional(),
+  tagIds: z
+    .array(z.string().uuid('tagId は UUID 形式で指定してください'))
+    .optional(),
 })
 export type CreateShopInput = z.infer<typeof createShopSchema>
 
@@ -317,7 +320,7 @@ export const createEventSchema = z.object({
     .trim(),
   description: z
     .string()
-    .max(1000, 'イベント説明は1000文字以内で入力してください')
+    .max(500, 'イベント説明は500文字以内で入力してください')
     .trim()
     .optional(),
   shopIds: z
@@ -336,7 +339,7 @@ export const updateEventSchema = z.object({
     .optional(),
   description: z
     .string()
-    .max(1000, 'イベント説明は1000文字以内で入力してください')
+    .max(500, 'イベント説明は500文字以内で入力してください')
     .trim()
     .optional(),
 }).refine(
@@ -347,7 +350,9 @@ export type UpdateEventInput = z.infer<typeof updateEventSchema>
 
 // 候補店舗追加（EVENT-05）
 export const addEventShopSchema = z.object({
-  shopId: z.string().uuid('shopId は UUID 形式で指定してください'),
+  shopIds: z
+    .array(z.string().uuid('shopId は UUID 形式で指定してください'))
+    .min(1, '追加する店舗を1件以上指定してください'),
 })
 export type AddEventShopInput = z.infer<typeof addEventShopSchema>
 
@@ -579,7 +584,7 @@ type ErrorResponse = {
 // タグ重複（SHOP-07）
 { "error": "同名のタグがすでに存在します", "code": "tag_already_exists" }
 
-// クローズ済みイベント（EVENT-10）
+// クローズ済みイベント（EVENT-10）: HTTP 410
 { "error": "このイベントはクローズされています", "code": "event_closed" }
 ```
 
@@ -676,6 +681,15 @@ function SafeLink({ href, children }: { href: string | null; children: React.Rea
   )
 }
 ```
+
+#### `safeUrl` refine と `SafeLink` コンポーネントの使い分け
+
+| 層 | 手段 | 目的 |
+|---|---|---|
+| 入力バリデーション（Zod） | `safeUrl` refine | フォーム送信・API 受信時に不正 URL をはじく。DB に危険な URL が保存されないよう保護する |
+| 出力（React コンポーネント） | `SafeLink` | DB から取得した既存データも含め、`<a href>` にレンダリングする直前に再チェックする |
+
+**両方を使う理由:** `safeUrl` のバリデーションを通過して DB に保存されたデータでも、将来的なスキーマ変更やデータ移行によって不正 URL が混入する可能性がある。出力層でも `SafeLink` によって二重にガードすることで XSS リスクを最小化する（SEC-05 の多層防御）。
 
 ### DB 保存前のサニタイズ方針
 
