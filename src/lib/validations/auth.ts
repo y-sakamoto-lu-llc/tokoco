@@ -18,9 +18,9 @@ export const signupSchema = z.object({
 	password: passwordSchema,
 	displayName: z
 		.string()
+		.trim()
 		.min(1, "表示名は必須です")
-		.max(50, "表示名は50文字以内で入力してください")
-		.trim(),
+		.max(50, "表示名は50文字以内で入力してください"),
 });
 export type SignupInput = z.infer<typeof signupSchema>;
 
@@ -60,9 +60,9 @@ export type PasswordResetInput = z.infer<typeof passwordResetSchema>;
 export const updateProfileSchema = z.object({
 	displayName: z
 		.string()
+		.trim()
 		.min(1, "表示名は必須です")
-		.max(50, "表示名は50文字以内で入力してください")
-		.trim(),
+		.max(50, "表示名は50文字以内で入力してください"),
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 

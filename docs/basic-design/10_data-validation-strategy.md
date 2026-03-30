@@ -121,9 +121,9 @@ export const signupSchema = z.object({
   password: passwordSchema,
   displayName: z
     .string()
+    .trim()
     .min(1, '表示名は必須です')
-    .max(50, '表示名は50文字以内で入力してください')
-    .trim(),
+    .max(50, '表示名は50文字以内で入力してください'),
 })
 export type SignupInput = z.infer<typeof signupSchema>
 
@@ -150,9 +150,9 @@ export type PasswordResetInput = z.infer<typeof passwordResetSchema>
 export const updateProfileSchema = z.object({
   displayName: z
     .string()
+    .trim()
     .min(1, '表示名は必須です')
-    .max(50, '表示名は50文字以内で入力してください')
-    .trim(),
+    .max(50, '表示名は50文字以内で入力してください'),
 })
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>
 
@@ -167,10 +167,21 @@ export const updateEmailSchema = z.object({
 export type UpdateEmailInput = z.infer<typeof updateEmailSchema>
 
 // パスワード変更（AUTH-13）
-export const updatePasswordSchema = z.object({
-  currentPassword: z.string().min(1, '現在のパスワードは必須です'),
-  newPassword: passwordSchema,
-})
+// currentPassword / newPassword / newPasswordConfirmation の3フィールド
+export const updatePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, '現在のパスワードは必須です'),
+    newPassword: passwordSchema,
+    newPasswordConfirmation: z.string(),
+  })
+  .refine((data) => data.newPassword === data.newPasswordConfirmation, {
+    message: 'パスワードが一致しません',
+    path: ['newPasswordConfirmation'],
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: '新しいパスワードは現在のパスワードと異なる必要があります',
+    path: ['newPassword'],
+  })
 export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>
 ```
 
