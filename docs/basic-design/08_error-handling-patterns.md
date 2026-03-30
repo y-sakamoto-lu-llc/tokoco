@@ -38,9 +38,20 @@
 | クローズ済みイベント | イベント状態チェック | 410 | 専用エラー画面 | share_token 経由での投票時 |
 | 重複エラー | DB ユニーク制約 | 409 | フォーム上部のアラート | 同名タグ等の重複 |
 | 外部 API エラー | Google Places API | 422 | インラインメッセージ＋フォールバック | SHOP-05 の手動入力モードへの切り替え |
-| タイムアウト / ネットワークエラー | fetch / AbortController | — | トースト通知（エラー） | リトライボタンを提供（PERF-02） |
+| タイムアウト / ネットワークエラー | fetch / AbortController | — | トースト通知（エラー） | リトライボタンを提供 |
 | レートリミット超過 | Cloudflare / Supabase | 429 | トースト通知（エラー） | 自動リトライは行わない。ユーザーに待機を案内 |
 | サーバー内部エラー | 予期せぬ例外 | 500 | トースト通知（エラー） | 技術的詳細はログのみ。ユーザーには汎用メッセージ |
+
+**PERF-02（店舗検索1秒以内応答）への対応:**
+
+`fetchApi` ラッパーの 10秒タイムアウトは汎用 API 呼び出しの安全弁であり、PERF-02 とは直接対応しない。PERF-02 を満たすため、`GET /api/shops/places/search` の Route Handler 内でより短いタイムアウト（例: 2秒）を設け、Google Places API 呼び出しを制御する。
+
+```typescript
+// src/app/api/shops/places/search/route.ts（イメージ）
+const response = await fetch(placesApiUrl, {
+  signal: AbortSignal.timeout(2_000), // PERF-02: 店舗検索は2秒以内で応答
+});
+```
 
 ### 1.2 ユーザー向けメッセージ vs 技術的ログの分離方針
 
@@ -171,7 +182,7 @@ if (shop.length === 0) {
 | Supabase エラーコード / メッセージ | HTTP ステータス | ユーザーメッセージ |
 |---|---|---|
 | `invalid_credentials` | 401 | 「メールアドレスまたはパスワードが正しくありません」 |
-| `email_not_confirmed` | 401 | 「メールアドレスの確認が完了していません。確認メールのリンクをクリックしてください」 |
+| `email_not_confirmed` | 401 | 「メールアドレスの確認が完了していません。確認メールのリンクをクリックしてください」 ※ `09_authentication-flow.md` L162 のフロー図は 403 と誤記あり。正しくは 401（本設計書・`05_api-route-handlers.md` 準拠）。09 側の修正が別途必要。 |
 | `user_already_exists` | 409 | 「このメールアドレスはすでに登録されています」 |
 | `weak_password` | 400 | 「パスワードは8文字以上で、英字と数字を含めてください」 |
 | `over_request_rate_limit` | 429 | 「リクエストが多すぎます。しばらく後にお試しください」 |
@@ -299,7 +310,7 @@ export async function fetchApi<T>(
         "Content-Type": "application/json",
         ...options?.headers,
       },
-      signal: options?.signal ?? AbortSignal.timeout(10_000), // 10秒タイムアウト（PERF-02）
+      signal: options?.signal ?? AbortSignal.timeout(10_000), // 10秒タイムアウト（汎用 API 呼び出しの安全弁）
     });
 
     if (response.ok) {
