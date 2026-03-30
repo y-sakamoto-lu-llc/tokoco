@@ -1,11 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-// 認証不要のルートパターン
+// 認証不要のルート（完全一致）
+// /verify-email はリダイレクトループ防止のために公開ルートに含める
 const PUBLIC_ROUTES = ["/", "/login", "/signup", "/reset-password", "/verify-email"];
+
+// 認証不要のルート（前方一致）
+// /events/share/* はゲストアクセス可能（share_token 経由の投票用）
+// /auth/callback・/auth/password-reset-callback は Supabase Auth のコールバック処理
 const PUBLIC_ROUTE_PREFIXES = ["/events/share/", "/auth/callback", "/auth/password-reset-callback"];
 
-// 認証済みユーザーをリダイレクトする認証系ルート
+// 認証済みユーザーが /(auth) ルートにアクセスした場合に /home へリダイレクトする対象
 const AUTH_ROUTES = ["/login", "/signup", "/reset-password"];
 
 function isPublicRoute(pathname: string): boolean {
@@ -13,6 +18,11 @@ function isPublicRoute(pathname: string): boolean {
 		return true;
 	}
 	return PUBLIC_ROUTE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+/** 公開ルート以外はすべて認証が必要（/(app)/* に相当） */
+function isProtectedRoute(pathname: string): boolean {
+	return !isPublicRoute(pathname);
 }
 
 function isAuthRoute(pathname: string): boolean {
@@ -25,6 +35,8 @@ export async function middleware(request: NextRequest) {
 	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 	const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
+	// supabase.auth.getUser() の呼び出しにより @supabase/ssr がアクセストークンの
+	// 期限切れを検知し、refresh_token を使って自動更新する（セッション自動更新）
 	const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
 		cookies: {
 			getAll() {
@@ -46,22 +58,19 @@ export async function middleware(request: NextRequest) {
 
 	const { pathname } = request.nextUrl;
 
-	// 公開ルートはそのまま通過
-	if (isPublicRoute(pathname)) {
-		// ログイン済みユーザーが認証ページにアクセスした場合はホームへ
-		if (isAuthRoute(pathname) && user) {
-			return NextResponse.redirect(new URL("/home", request.url));
-		}
-		return response;
-	}
-
 	// 保護されたルートへのアクセスは認証を確認
-	if (!user) {
-		return NextResponse.redirect(new URL("/login", request.url));
+	if (isProtectedRoute(pathname)) {
+		if (!user) {
+			return NextResponse.redirect(new URL("/login", request.url));
+		}
+		if (!user.email_confirmed_at) {
+			return NextResponse.redirect(new URL("/verify-email", request.url));
+		}
 	}
 
-	if (!user.email_confirmed_at) {
-		return NextResponse.redirect(new URL("/verify-email", request.url));
+	// ログイン済みユーザーが認証ページ（/(auth)/*）にアクセスした場合はホームへ
+	if (isAuthRoute(pathname) && user) {
+		return NextResponse.redirect(new URL("/home", request.url));
 	}
 
 	return response;
