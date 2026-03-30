@@ -22,6 +22,12 @@ tools: Bash, Read, Glob, Grep
 
 ## PR コードレビューの手順
 
+### 重要: Bash が使えない場合の対応
+
+`gh` コマンドが実行できない場合でも、**レビュー結果本文は必ず返すこと**。
+GitHub へのコメント投稿と Projects ステータス更新は親エージェントが代わりに行う。
+「権限がないので何もできない」という応答は禁止。レビュー内容を出力することが最優先。
+
 ### 1. PRの内容を把握する
 
 ```bash
@@ -46,18 +52,10 @@ IssueにカバーするREQ IDが記載されていれば `docs/requirements.md` 
 
 ### 4. レビューコメントをPRに投稿する
 
+**注意: 同一アカウントのPRには `--approve`/`--request-changes` が使えないため、常に `gh pr comment` を使うこと。**
+
 ```bash
-# 承認
-gh pr review <PR番号> --repo y-sakamoto-lu-llc/tokoco --approve \
-  --body "レビューコメント"
-
-# 修正依頼
-gh pr review <PR番号> --repo y-sakamoto-lu-llc/tokoco --request-changes \
-  --body "レビューコメント"
-
-# コメントのみ（承認でも拒否でもない）
-gh pr review <PR番号> --repo y-sakamoto-lu-llc/tokoco --comment \
-  --body "レビューコメント"
+gh pr comment <PR番号> --repo y-sakamoto-lu-llc/tokoco --body "レビューコメント"
 ```
 
 レビュー投稿後、GitHub Projects のステータスを更新する。Issue番号は PR の "Closes #XX" から特定する。
