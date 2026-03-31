@@ -33,20 +33,19 @@ export async function POST(request: Request) {
 				{ status: 429 }
 			);
 		}
+		// メール未確認
+		if (error.code === "email_not_confirmed") {
+			return NextResponse.json(
+				{
+					error: "メールアドレスの確認が完了していません。確認メールのリンクをクリックしてください",
+				},
+				{ status: 401 }
+			);
+		}
 		// 認証失敗（メール or パスワード不一致）
 		console.error("[POST /api/auth/login] Supabase error:", error);
 		return NextResponse.json(
 			{ error: "メールアドレスまたはパスワードが正しくありません" },
-			{ status: 401 }
-		);
-	}
-
-	// メール未確認の場合
-	if (!data.user.email_confirmed_at) {
-		return NextResponse.json(
-			{
-				error: "メールアドレスの確認が完了していません。確認メールをご確認ください",
-			},
 			{ status: 401 }
 		);
 	}

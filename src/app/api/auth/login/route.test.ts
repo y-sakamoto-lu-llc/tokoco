@@ -43,7 +43,7 @@ type SignInResult = {
 		} | null;
 		session: null;
 	};
-	error: { status?: number; message: string } | null;
+	error: { status?: number; code?: string; message: string } | null;
 };
 
 function makeMockSupabase(signInResult: SignInResult) {
@@ -176,11 +176,8 @@ describe("POST /api/auth/login", () => {
 
 	it("メール未確認の場合は401を返す", async () => {
 		const mockSupabase = makeMockSupabase({
-			data: {
-				user: { ...validUser, email_confirmed_at: null },
-				session: null,
-			},
-			error: null,
+			data: { user: null, session: null },
+			error: { code: "email_not_confirmed", message: "Email not confirmed" },
 		});
 		vi.mocked(createSupabaseServerClient).mockResolvedValue(
 			mockSupabase as ReturnType<typeof makeMockSupabase> as never
