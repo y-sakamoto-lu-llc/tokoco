@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-// isPublicRoute / isAuthRoute のロジックをテスト（関数をエクスポートせずにロジックだけ検証）
+// isPublicRoute / isProtectedRoute / isAuthRoute のロジックをテスト
 const PUBLIC_ROUTES = ["/", "/login", "/signup", "/reset-password", "/verify-email"];
 const PUBLIC_ROUTE_PREFIXES = ["/events/share/", "/auth/callback", "/auth/password-reset-callback"];
 const AUTH_ROUTES = ["/login", "/signup", "/reset-password"];
@@ -10,6 +10,10 @@ function isPublicRoute(pathname: string): boolean {
 		return true;
 	}
 	return PUBLIC_ROUTE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+function isProtectedRoute(pathname: string): boolean {
+	return !isPublicRoute(pathname);
 }
 
 function isAuthRoute(pathname: string): boolean {
@@ -86,6 +90,40 @@ describe("middleware route classification", () => {
 
 		it("/home は認証ルートではない", () => {
 			expect(isAuthRoute("/home")).toBe(false);
+		});
+	});
+
+	describe("isProtectedRoute", () => {
+		it("/home は保護されたルート（認証必須）", () => {
+			expect(isProtectedRoute("/home")).toBe(true);
+		});
+
+		it("/shops は保護されたルート（認証必須）", () => {
+			expect(isProtectedRoute("/shops")).toBe(true);
+		});
+
+		it("/events は保護されたルート（認証必須）", () => {
+			expect(isProtectedRoute("/events")).toBe(true);
+		});
+
+		it("/account は保護されたルート（認証必須）", () => {
+			expect(isProtectedRoute("/account")).toBe(true);
+		});
+
+		it("/ は保護されたルートではない（公開）", () => {
+			expect(isProtectedRoute("/")).toBe(false);
+		});
+
+		it("/login は保護されたルートではない（公開）", () => {
+			expect(isProtectedRoute("/login")).toBe(false);
+		});
+
+		it("/events/share/<token> は保護されたルートではない（ゲストアクセス可）", () => {
+			expect(isProtectedRoute("/events/share/abc123")).toBe(false);
+		});
+
+		it("/verify-email は保護されたルートではない（リダイレクトループ防止）", () => {
+			expect(isProtectedRoute("/verify-email")).toBe(false);
 		});
 	});
 });
