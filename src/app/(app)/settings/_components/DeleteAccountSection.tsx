@@ -20,6 +20,7 @@ export function DeleteAccountSection() {
 		});
 
 		if (res.ok || res.status === 204) {
+			router.refresh();
 			router.push("/login");
 			return;
 		}
@@ -41,33 +42,20 @@ export function DeleteAccountSection() {
 			)}
 
 			{!showConfirm ? (
-				<Button
-					variant="destructive"
-					onClick={() => setShowConfirm(true)}
-				>
+				<Button variant="destructive" onClick={() => setShowConfirm(true)}>
 					アカウントを削除
 				</Button>
 			) : (
 				<div className="rounded-md border border-destructive/50 bg-destructive/5 p-4 space-y-4">
-					<p className="text-sm font-medium text-destructive">
-						本当にアカウントを削除しますか？
-					</p>
+					<p className="text-sm font-medium text-destructive">本当にアカウントを削除しますか？</p>
 					<p className="text-sm text-muted-foreground">
 						この操作は取り消せません。登録した店舗・タグ・イベントのデータはすべて削除されます。
 					</p>
 					<div className="flex gap-3">
-						<Button
-							variant="destructive"
-							onClick={handleDelete}
-							disabled={isDeleting}
-						>
+						<Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
 							{isDeleting ? "削除中..." : "削除する"}
 						</Button>
-						<Button
-							variant="outline"
-							onClick={() => setShowConfirm(false)}
-							disabled={isDeleting}
-						>
+						<Button variant="outline" onClick={() => setShowConfirm(false)} disabled={isDeleting}>
 							キャンセル
 						</Button>
 					</div>

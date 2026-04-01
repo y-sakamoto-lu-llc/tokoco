@@ -1,4 +1,6 @@
+import { createDb, profiles } from "@/db";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { DeleteAccountSection } from "./_components/DeleteAccountSection";
 import { EmailForm } from "./_components/EmailForm";
@@ -15,8 +17,14 @@ export default async function SettingsPage() {
 		redirect("/login");
 	}
 
-	const displayName =
-		(user.user_metadata?.display_name as string | undefined) ?? user.email ?? "";
+	const db = createDb();
+	const profile = await db
+		.select({ displayName: profiles.displayName })
+		.from(profiles)
+		.where(eq(profiles.id, user.id))
+		.then((rows) => rows[0] ?? null);
+
+	const displayName = profile?.displayName ?? user.email ?? "";
 	const email = user.email ?? "";
 
 	return (
