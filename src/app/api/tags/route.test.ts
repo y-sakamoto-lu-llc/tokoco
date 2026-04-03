@@ -122,11 +122,18 @@ describe("POST /api/tags", () => {
 		expect(body.errors?.name).toBeDefined();
 	});
 
-	it("31文字以上のタグ名で400を返す", async () => {
-		const req = makeRequest({ name: "あ".repeat(31) });
+	it("51文字以上のタグ名で400を返す", async () => {
+		const req = makeRequest({ name: "あ".repeat(51) });
 		const res = await POST(req);
 
 		expect(res.status).toBe(400);
+	});
+
+	it("50文字のタグ名は正常に受け付ける", async () => {
+		const req = makeRequest({ name: "あ".repeat(50) });
+		const res = await POST(req);
+
+		expect(res.status).toBe(201);
 	});
 
 	it("同名タグが存在する場合は409を返す", async () => {

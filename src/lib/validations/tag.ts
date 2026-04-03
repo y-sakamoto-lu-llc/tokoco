@@ -5,7 +5,7 @@ export const createTagSchema = z.object({
 	name: z
 		.string()
 		.min(1, "タグ名は必須です")
-		.max(30, "タグ名は30文字以内で入力してください")
+		.max(50, "タグ名は50文字以内で入力してください")
 		.trim(),
 });
 export type CreateTagInput = z.infer<typeof createTagSchema>;

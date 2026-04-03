@@ -19,17 +19,17 @@ describe("createTagSchema", () => {
 		}
 	});
 
-	it("name が 30 文字を超える場合はエラー", () => {
-		const result = createTagSchema.safeParse({ name: "あ".repeat(31) });
+	it("name が 50 文字を超える場合はエラー", () => {
+		const result = createTagSchema.safeParse({ name: "あ".repeat(51) });
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			const err = result.error.issues.find((e) => e.path[0] === "name");
-			expect(err?.message).toBe("タグ名は30文字以内で入力してください");
+			expect(err?.message).toBe("タグ名は50文字以内で入力してください");
 		}
 	});
 
-	it("name がちょうど30文字の場合は受け入れる", () => {
-		const result = createTagSchema.safeParse({ name: "あ".repeat(30) });
+	it("name がちょうど50文字の場合は受け入れる", () => {
+		const result = createTagSchema.safeParse({ name: "あ".repeat(50) });
 		expect(result.success).toBe(true);
 	});
 

@@ -4,7 +4,7 @@
 import { createDb } from "@/db/client";
 import { shopTags, shops, tags } from "@/db/schema";
 import type { CreateShopInput, ShopListQuery, UpdateShopInput } from "@/lib/validations/shop";
-import { and, asc, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 
 export type ShopWithTags = {
 	id: string;
@@ -201,15 +201,22 @@ export async function createShop(userId: string, input: CreateShopInput): Promis
 
 	const shop = inserted[0];
 
-	// タグ付与
+	// タグ付与（所有者確認あり: userId が一致するタグのみ）
+	let tagRows: { id: string; name: string }[] = [];
 	if (tagIds && tagIds.length > 0) {
-		await db.insert(shopTags).values(tagIds.map((tagId) => ({ shopId: shop.id, tagId })));
-	}
+		// userId で所有者確認してから取得
+		const ownedTags = await db
+			.select({ id: tags.id, name: tags.name })
+			.from(tags)
+			.where(and(inArray(tags.id, tagIds), eq(tags.userId, userId)));
 
-	const tagRows =
-		tagIds && tagIds.length > 0
-			? await db.select({ id: tags.id, name: tags.name }).from(tags).where(inArray(tags.id, tagIds))
-			: [];
+		if (ownedTags.length > 0) {
+			await db
+				.insert(shopTags)
+				.values(ownedTags.map((tag) => ({ shopId: shop.id, tagId: tag.id })));
+			tagRows = ownedTags;
+		}
+	}
 
 	return toShopWithTags(shop, tagRows);
 }
@@ -274,11 +281,12 @@ export async function updateShop(
 export async function deleteShop(userId: string, shopId: string): Promise<boolean> {
 	const db = createDb();
 
-	// 削除前にこの店舗が使用しているタグIDを記録
+	// 削除前にこの店舗が使用しているタグIDを記録（userId で所有確認）
 	const usedTagIds = await db
 		.select({ tagId: shopTags.tagId })
 		.from(shopTags)
-		.where(eq(shopTags.shopId, shopId));
+		.innerJoin(shops, eq(shopTags.shopId, shops.id))
+		.where(and(eq(shopTags.shopId, shopId), eq(shops.userId, userId)));
 
 	const deleted = await db
 		.delete(shops)
@@ -382,33 +390,10 @@ export async function detachTagFromShop(
 		.limit(1);
 
 	if (stillUsed.length === 0) {
-		await db.delete(tags).where(eq(tags.id, tagId));
+		await db.delete(tags).where(and(eq(tags.id, tagId), eq(tags.userId, userId)));
 	}
 
 	return true;
-}
-
-/**
- * orphan タグ（shop_tags 参照ゼロのタグ）を削除
- * ユーザーに属するタグで使用されていないものを削除する
- */
-export async function deleteOrphanTags(userId: string): Promise<void> {
-	const db = createDb();
-
-	// ユーザーのタグで shop_tags に参照されているものを除外して削除
-	const usedTagIds = db
-		.select({ tagId: shopTags.tagId })
-		.from(shopTags)
-		.innerJoin(shops, eq(shopTags.shopId, shops.id))
-		.where(eq(shops.userId, userId));
-
-	const usedIds = (await usedTagIds).map((r) => r.tagId);
-
-	if (usedIds.length > 0) {
-		await db.delete(tags).where(and(eq(tags.userId, userId), notInArray(tags.id, usedIds)));
-	} else {
-		await db.delete(tags).where(eq(tags.userId, userId));
-	}
 }
 
 /**
