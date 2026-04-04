@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
@@ -29,6 +30,7 @@ export default function RootLayout({
 		<html lang="ja" className={`${inter.variable} ${notoSansJP.variable} h-full`}>
 			<body className="font-sans min-h-full bg-background text-foreground antialiased">
 				{children}
+				<Toaster position="bottom-center" richColors />
 			</body>
 		</html>
 	);
