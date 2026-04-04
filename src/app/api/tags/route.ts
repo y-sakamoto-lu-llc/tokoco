@@ -62,8 +62,11 @@ export async function POST(request: Request) {
 
 	try {
 		const tag = await createTag(user.id, result.data);
-		if (tag === "conflict") {
-			return NextResponse.json({ error: "同名のタグがすでに存在します" }, { status: 409 });
+		if (typeof tag === "object" && "type" in tag && tag.type === "conflict") {
+			return NextResponse.json(
+				{ error: "同名のタグがすでに存在します", existingId: tag.existingId },
+				{ status: 409 }
+			);
 		}
 		return NextResponse.json(tag, { status: 201 });
 	} catch (err) {

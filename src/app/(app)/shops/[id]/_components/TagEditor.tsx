@@ -56,10 +56,10 @@ export function TagEditor({ shopId, initialTags }: TagEditorProps) {
 			});
 
 			if (createRes.status === 409) {
-				// 既存タグ: ユーザータグ一覧から検索
-				const existing = userTags.find((t) => t.name === name.trim());
-				if (existing) {
-					tagId = existing.id;
+				// 既存タグ: レスポンスボディの existingId を使用する
+				const conflictBody = (await createRes.json()) as { existingId?: string };
+				if (conflictBody.existingId) {
+					tagId = conflictBody.existingId;
 				} else {
 					toast.error("タグが見つかりませんでした");
 					return;

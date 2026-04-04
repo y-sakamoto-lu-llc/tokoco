@@ -23,14 +23,17 @@ type ShopDetailProps = {
 };
 
 export function ShopDetail({ shop }: ShopDetailProps) {
+	// https:// プロトコルのURLのみ表示する（任意プロトコルへのリクエストを防ぐ）
+	const safePhotoUrl = shop.photoUrl?.startsWith("https://") ? shop.photoUrl : null;
+
 	return (
 		<div className="space-y-6">
 			{/* 写真 */}
-			{shop.photoUrl && (
+			{safePhotoUrl && (
 				<div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted">
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
-						src={shop.photoUrl}
+						src={safePhotoUrl}
 						alt={`${shop.name}の写真`}
 						className="w-full h-full object-cover"
 					/>

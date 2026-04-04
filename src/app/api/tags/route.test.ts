@@ -136,8 +136,8 @@ describe("POST /api/tags", () => {
 		expect(res.status).toBe(201);
 	});
 
-	it("同名タグが存在する場合は409を返す", async () => {
-		vi.mocked(createTag).mockResolvedValue("conflict");
+	it("同名タグが存在する場合は409とexistingIdを返す", async () => {
+		vi.mocked(createTag).mockResolvedValue({ type: "conflict", existingId: "existing-tag-id" });
 
 		const req = makeRequest({ name: "既存タグ" });
 		const res = await POST(req);
@@ -145,6 +145,7 @@ describe("POST /api/tags", () => {
 		expect(res.status).toBe(409);
 		const body = await res.json();
 		expect(body.error).toBe("同名のタグがすでに存在します");
+		expect(body.existingId).toBe("existing-tag-id");
 	});
 
 	it("不正なJSONで400を返す", async () => {
