@@ -97,14 +97,14 @@ describe("createTag — 同名チェック", () => {
 
 		const result = await createTag(USER_ID, { name: "新タグ" });
 
-		expect(result).not.toBe("conflict");
-		if (result !== "conflict") {
+		expect(result).not.toMatchObject({ type: "conflict" });
+		if (!("type" in result)) {
 			expect(result.id).toBe(TAG_ID);
 			expect(result.name).toBe("新タグ");
 		}
 	});
 
-	it("同名タグが存在する場合は conflict を返す", async () => {
+	it("同名タグが存在する場合は { type: 'conflict', existingId } を返す", async () => {
 		// 同名チェック SELECT → 既存あり
 		const checkLimit = vi.fn().mockResolvedValue([{ id: "existing-tag" }]);
 		const checkWhere = vi.fn().mockReturnValue({ limit: checkLimit });
@@ -113,7 +113,7 @@ describe("createTag — 同名チェック", () => {
 
 		const result = await createTag(USER_ID, { name: "既存タグ" });
 
-		expect(result).toBe("conflict");
+		expect(result).toMatchObject({ type: "conflict", existingId: "existing-tag" });
 		expect(mockDb.insert).not.toHaveBeenCalled();
 	});
 });

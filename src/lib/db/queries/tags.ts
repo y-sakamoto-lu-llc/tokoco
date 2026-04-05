@@ -37,12 +37,12 @@ export async function getTagsByUserId(userId: string): Promise<TagItem[]> {
 
 /**
  * タグ作成
- * 同名タグが存在する場合は "conflict" を返す
+ * 同名タグが存在する場合は { type: "conflict", existingId: string } を返す
  */
 export async function createTag(
 	userId: string,
 	input: CreateTagInput
-): Promise<TagItem | "conflict"> {
+): Promise<TagItem | { type: "conflict"; existingId: string }> {
 	const db = createDb();
 
 	// 同名チェック
@@ -53,7 +53,7 @@ export async function createTag(
 		.limit(1);
 
 	if (existing.length > 0) {
-		return "conflict";
+		return { type: "conflict", existingId: existing[0].id };
 	}
 
 	const inserted = await db.insert(tags).values({ userId, name: input.name }).returning();
