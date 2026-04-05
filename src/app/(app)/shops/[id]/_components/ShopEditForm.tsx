@@ -103,6 +103,10 @@ export function ShopEditForm({ shop, onSuccess, onCancel }: ShopEditFormProps) {
 			phone: (values.phone as string) || null,
 			category: (values.category as string) || null,
 			priceRange: values.priceRange ?? null,
+			externalRating: values.externalRating ?? null,
+			businessHours: (values.businessHours as string) || null,
+			websiteUrl: (values.websiteUrl as string) || null,
+			googleMapsUrl: (values.googleMapsUrl as string) || null,
 			note: (values.note as string) || null,
 		});
 	}
